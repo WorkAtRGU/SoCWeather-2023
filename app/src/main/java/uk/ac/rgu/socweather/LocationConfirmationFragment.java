@@ -4,15 +4,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link LocationConfirmationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LocationConfirmationFragment extends Fragment {
+public class LocationConfirmationFragment extends Fragment implements View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,5 +63,22 @@ public class LocationConfirmationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_location_confirmation, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // for navigate to the forecast fragment
+        Button btnGetForecastLocationConfirm = view.findViewById(R.id.btnGetForecastLocationConfirm);
+        btnGetForecastLocationConfirm.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.btnGetForecastLocationConfirm){
+            // TODO: get the location selected by the user
+            // navigate to the forecast fragment
+            Navigation.findNavController(view).navigate(R.id.action_locationConfirmationFragment_to_forecastFragment);
+        }
     }
 }
