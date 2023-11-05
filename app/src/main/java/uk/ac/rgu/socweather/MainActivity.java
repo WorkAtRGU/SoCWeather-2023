@@ -65,21 +65,18 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         // work out where the user currently is
         int currentFragmentId = navController.getCurrentDestination().getId();
 
-        switch (item.getItemId()){
-            case R.id.mi_bottomNavLocationSelection:
-                // navigate "home" to the location select fragment
-                if (currentFragmentId != R.id.locationSelectionFragment){
-                    navController.navigate(R.id.locationSelectionFragment);
-                    return true;
-                }
-                break;
-            case R.id.mi_bottomNavSetting:
+        if (item.getItemId() == R.id.mi_bottomNavLocationSelection) {
+            // navigate "home" to the location select fragment
+            if (currentFragmentId != R.id.locationSelectionFragment) {
+                navController.navigate(R.id.locationSelectionFragment);
+                return true;
+            }
+        } else if (item.getItemId() == R.id.mi_bottomNavSetting){
                     // navigate to settings fragment
                 if (currentFragmentId != R.id.settingsFragment){
                     navController.navigate(R.id.settingsFragment);
                     return true;
                 }
-                break;
         }
         return false;
     }
