@@ -31,5 +31,15 @@
         <item>Farenheit</item>
         <item>Kelvin</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!-- menu item -->
+    <string name="mi_appBarSettings">Settings</string>
+    <string name="mi_bottomNavLocationSelection">Home</string>
+    <string name="mi_bottomNavSettings">Settings</string>
+    <string name="error_parsing_forecast">Error parsing the weather forecast</string>
+    <string name="error_downloading_forecast">Error getting the weather forecast</string>
+    <string name="forecast_date_format">dd-MMM</string>
 </resources>

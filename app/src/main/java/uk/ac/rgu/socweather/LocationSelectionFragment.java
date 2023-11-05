@@ -1,22 +1,24 @@
 package uk.ac.rgu.socweather;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link LocationConfirmationFragment#newInstance} factory method to
+ * Use the {@link LocationSelectionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LocationConfirmationFragment extends Fragment implements View.OnClickListener {
+public class LocationSelectionFragment extends Fragment implements View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,7 +29,7 @@ public class LocationConfirmationFragment extends Fragment implements View.OnCli
     private String mParam1;
     private String mParam2;
 
-    public LocationConfirmationFragment() {
+    public LocationSelectionFragment() {
         // Required empty public constructor
     }
 
@@ -37,11 +39,11 @@ public class LocationConfirmationFragment extends Fragment implements View.OnCli
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LocationConfirmationFragment.
+     * @return A new instance of fragment LocationSelectionFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LocationConfirmationFragment newInstance(String param1, String param2) {
-        LocationConfirmationFragment fragment = new LocationConfirmationFragment();
+    public static LocationSelectionFragment newInstance(String param1, String param2) {
+        LocationSelectionFragment fragment = new LocationSelectionFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -62,23 +64,36 @@ public class LocationConfirmationFragment extends Fragment implements View.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_location_confirmation, container, false);
+        return inflater.inflate(R.layout.fragment_location_selection, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // for navigate to the forecast fragment
-        Button btnGetForecastLocationConfirm = view.findViewById(R.id.btnGetForecastLocationConfirm);
-        btnGetForecastLocationConfirm.setOnClickListener(this);
+        // for navigating to the LocationConfirmationFragment
+        Button getForecastButton = view.findViewById(R.id.btnGetForecast);
+        getForecastButton.setOnClickListener(this);
+
+        // for navigating to the ForecastFragment
+        Button gpsForecastButton = view.findViewById(R.id.btnGpsForecast);
+        gpsForecastButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.btnGetForecastLocationConfirm){
-            // TODO: get the location selected by the user
-            // navigate to the forecast fragment
-            Navigation.findNavController(view).navigate(R.id.action_locationConfirmationFragment_to_forecastFragment);
-        }
+        // get the nav contoller
+       NavController navController = Navigation.findNavController(view);
+
+           // TODO: get the number of days to get the forecast for
+         if (view.getId() ==R.id.btnGetForecast) {
+             // navigate to the LocationConfirmationFragment
+             navController.navigate(R.id.action_locationSelectionFragment_to_locationConfirmationFragment);
+
+         } else if (view.getId() == R.id.btnGpsForecast) {
+             // TODO: get the location from GPS
+             // navigate to the Forecast Fragment
+             navController.navigate(R.id.action_locationSelectionFragment_to_forecastFragment);
+         }
+
     }
 }
