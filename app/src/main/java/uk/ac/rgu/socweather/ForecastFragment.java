@@ -1,11 +1,33 @@
 package uk.ac.rgu.socweather;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import uk.ac.rgu.socweather.data.HourForecast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -13,6 +35,9 @@ import androidx.fragment.app.Fragment;
  * create an instance of this fragment.
  */
 public class ForecastFragment extends Fragment {
+
+    // tag for loggging message
+    private static final String TAG = "ForecastFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,5 +84,95 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_forecast, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        downloadForecast();
+    }
+
+    private void downloadForecast(){
+        String url = "https://api.weatherapi.com/v1/forecast.json?key=a3b9cc3fb35943d5826152257210311&q=Aberdeen&days=3";
+
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, response);
+                // for formatting the date of the forecast
+                SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.forecast_date_format));
+
+                // for storing all the weather forecast
+                List<HourForecast> forecastList = new ArrayList<HourForecast>(24*5);
+
+                try {
+                    // convert text response to a JSON object for processing
+                    JSONObject rootObj = new JSONObject(response);
+                    // get the forecast value
+                    JSONObject forecastObject = rootObj.getJSONObject("forecast");
+                    // get the forecast day value - an array of days
+                    JSONArray forecastDayArray = forecastObject.getJSONArray("forecastday");
+                    // for every forecast day
+                    for (int i = 0, j = forecastDayArray.length(); i<j; i++){
+                        // get the day at position i
+                        JSONObject dayObject = forecastDayArray.getJSONObject(i);
+                        // from the day, get the hour array
+                        JSONArray hourArray = dayObject.getJSONArray("hour");
+                        for (int ii = 0, jj = hourArray.length(); ii < jj; ii++){
+                            // get the forecast hour object
+                            JSONObject forecastHourObject = hourArray.getJSONObject(ii);
+                            // now extract the forecast info
+                            double temperature = forecastHourObject.getDouble("temp_c");
+                            int humidity = forecastHourObject.getInt("humidity");
+                            // get the condition object to work out the weather description
+                            JSONObject conditionObject = forecastHourObject.getJSONObject("condition");
+                            // get the weather description
+                            String weather = conditionObject.getString("text");
+                            // get the weather icon
+                            String weatherIcon = conditionObject.getString("icon");
+
+                            // work out the date and time
+                            long timeEpoch = forecastHourObject.getLong("time_epoch");
+                            Calendar calendar = Calendar.getInstance();
+                            // the time in the forecast json is in seconds, so convert to millisecond
+                            calendar.setTimeInMillis(timeEpoch*1000);
+
+                            int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                            // format the date for display
+                            String dayMonth = sdf.format(calendar.getTime());
+
+                            // create the HourForecast domain object for this hour
+                            HourForecast hourForecast = new HourForecast();
+                            hourForecast.setTemperature(temperature);
+                            hourForecast.setHumidity(humidity);
+                            hourForecast.setWeather(weather);
+                            hourForecast.setIconURL(weatherIcon);
+                            hourForecast.setHour(hourOfDay);
+                            hourForecast.setDate(dayMonth);
+
+                            // add this hour forecast to the list
+                            forecastList.add(hourForecast);
+                        }
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(getContext(), R.string.error_parsing_forecast, Toast.LENGTH_LONG );
+                    Log.e(TAG, "Parsing JSON" + e.getLocalizedMessage());
+                    e.printStackTrace();
+                } finally {
+                    // do something the forecasts that have been downloaded
+                    Log.e(TAG, "Downloaded " + forecastList.size() + " forecasts");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), R.string.error_downloading_forecast, Toast.LENGTH_LONG );
+                Log.e(TAG, error.getLocalizedMessage());
+            }
+        });
+        // create a new RequestQueue
+        RequestQueue rq = Volley.newRequestQueue(getContext());
+        // add the request to make it
+        rq.add(request);
     }
 }
