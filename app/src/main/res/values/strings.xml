@@ -13,8 +13,13 @@
 
     <!-- Location Confirmation fragment -->
     <string name="tvConfirmLocationLabel">Please confirm the location you want from the options below.</string>
+    <string name="tvConfirmLocationLabelLoading">Searching for locations like %1$s.</string>
 
     <string name="btnGetForecastLocationConfirm">Get forecast RecyclerView</string>
+    <string name="error_downloading_locations">Error getting locations from the WeatherAPI</string>
+    <string name="get_forecast_basic_listview">Get Forecast Basic ListView</string>
+    <string name="get_forecast_custom_listview">Get Forecast Custom ListView</string>
+    <string name="tv_confirm_location_no_locations">No locations found matching %1$s</string>
 
     <!-- Forecast fragment -->
     <string name="tvForecastLabelLoading">Getting forecast for %1$s </string>
@@ -43,8 +48,6 @@
     <string name="error_parsing_forecast">Error parsing the weather forecast</string>
     <string name="error_downloading_forecast">Error getting the weather forecast</string>
     <string name="forecast_date_format">dd-MMM</string>
-    <string name="get_forecast_basic_listview">Get Forecast Basic ListView</string>
-    <string name="get_forecast_custom_listview">Get Forecast Custom ListView</string>
 
 
     <!-- hour forecast list item -->
