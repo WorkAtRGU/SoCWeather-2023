@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,9 @@ public class CustomListViewFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    // the adapter being used by the ListView
+    private HourForecastArrayAdapter mListAdapter;
+
     public CustomListViewFragment() {
         // Required empty public constructor
     }
@@ -81,13 +85,14 @@ public class CustomListViewFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_forecast, container, false);
+        return inflater.inflate(R.layout.fragment_custom_list_view, container, false);
     }
 
     @Override
@@ -174,9 +179,14 @@ public class CustomListViewFragment extends Fragment {
 
                     // if we have some data, then enable the relevant Views
                     if (forecastList.size() > 0) {
+                        // setup the adapter with the data
+                        mListAdapter = new HourForecastArrayAdapter(getContext(), R.layout.hour_forecast_list_item, forecastList);
+                        mListAdapter.notifyDataSetChanged();
+
                         // display the forecast list
-                        RecyclerView rv = getActivity().findViewById(R.id.rvForecast);
-                        rv.setVisibility(View.VISIBLE);
+                        ListView lv = getActivity().findViewById(R.id.lvCustomForecast);
+                        lv.setAdapter(mListAdapter);
+                        lv.setVisibility(View.VISIBLE);
                         // enable the buttons for sharing
                         getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
                         getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);

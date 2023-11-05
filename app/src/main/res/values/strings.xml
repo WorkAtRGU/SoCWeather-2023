@@ -44,4 +44,10 @@
     <string name="forecast_date_format">dd-MMM</string>
     <string name="get_forecast_basic_listview">Get Forecast Basic ListView</string>
     <string name="get_forecast_custom_listview">Get Forecast Custom ListView</string>
+
+
+    <!-- hour forecast list item -->
+    <string name="tv_forecast_item_hour">%1$d:00</string>
+    <string name="tv_forecast_item_temp">%1$s \u00B0C</string>
+    <string name="tv_forecast_item_humidity">%1$d %%</string>
 </resources>
