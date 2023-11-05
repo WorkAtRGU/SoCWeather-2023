@@ -35,6 +35,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import uk.ac.rgu.socweather.data.HourForecast;
+import uk.ac.rgu.socweather.data.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -101,8 +102,12 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
         TextView tvForecastLabel = getActivity().findViewById(R.id.tvForecastLabel);
         tvForecastLabel.setText(getContext().getString(R.string.tvForecastLabelLoading,mLocation));
 
+        // set the action handlers on the buttons
         Button btnShowMap = view.findViewById(R.id.btnShowLocationMap);
         btnShowMap.setOnClickListener(this);
+
+        Button btnCheckForecastOnline = view.findViewById(R.id.btnCheckForecastOnline);
+        btnCheckForecastOnline.setOnClickListener(this);
 
         downloadForecast();
     }
@@ -230,6 +235,15 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
             Uri geoLocation = builder.build();
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(geoLocation);
+            //if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            //}
+        } else if (view.getId() == R.id.btnCheckForecastOnline){
+            // launch the web browser app loading a serach engine
+            // with a URL searching for the weather at mLocation
+            // such as https://www.bing.com/search?q=aberdeen+weather
+            Uri webpage = Utils.buildUri("https://www.bing.com/search?", "q", this.mLocation + " weather");
+            Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
             //if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
             //}
