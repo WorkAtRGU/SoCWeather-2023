@@ -5,11 +5,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -155,19 +158,33 @@ public class ForecastFragment extends Fragment {
                         }
                     }
                 } catch (JSONException e) {
+                    // display an error on the Toast and label text view
                     Toast.makeText(getContext(), R.string.error_parsing_forecast, Toast.LENGTH_LONG );
-                    Log.e(TAG, "Parsing JSON" + e.getLocalizedMessage());
+                    ((TextView)getActivity().findViewById(R.id.tvForecastLabel)).setText(R.string.error_parsing_forecast);
+
+                    Log.d(TAG, "Parsing JSON erro" + e.getLocalizedMessage());
                     e.printStackTrace();
                 } finally {
                     // do something the forecasts that have been downloaded
                     Log.e(TAG, "Downloaded " + forecastList.size() + " forecasts");
+                    // remove the spinner
+                    ProgressBar pg = getActivity().findViewById(R.id.pb_forecastFragment);
+                    pg.setVisibility(View.GONE);
+                    // display the forecast list
+                    RecyclerView rv = getActivity().findViewById(R.id.rvForecast);
+                    rv.setVisibility(View.VISIBLE);
+                    // enable the buttons for sharing
+                    getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
+                    getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);
+                    getActivity().findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), R.string.error_downloading_forecast, Toast.LENGTH_LONG );
-                Log.e(TAG, error.getLocalizedMessage());
+                ((TextView)getActivity().findViewById(R.id.tvForecastLabel)).setText(R.string.error_downloading_forecast);
+                Log.e(TAG, "Error downloading " + error.getMessage());
             }
         });
         // create a new RequestQueue
