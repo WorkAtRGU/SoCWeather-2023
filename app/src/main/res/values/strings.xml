@@ -14,7 +14,7 @@
     <!-- Location Confirmation fragment -->
     <string name="tvConfirmLocationLabel">Please confirm the location you want from the options below.</string>
 
-    <string name="btnGetForecastLocationConfirm">Get forecast RecyclerView</string>
+    <string name="btnGetForecastLocationConfirm">Get forecast</string>
 
     <!-- Forecast fragment -->
     <string name="tvForecastLabel">Forecast for </string>
@@ -42,6 +42,4 @@
     <string name="error_parsing_forecast">Error parsing the weather forecast</string>
     <string name="error_downloading_forecast">Error getting the weather forecast</string>
     <string name="forecast_date_format">dd-MMM</string>
-    <string name="get_forecast_basic_listview">Get Forecast Basic ListView</string>
-    <string name="get_forecast_custom_listview">Get Forecast Custom ListView</string>
 </resources>

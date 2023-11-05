@@ -11,18 +11,6 @@ public class HourForecast {
     // the forecasted humidity in % (between 0 and 100)
     private int humidity;
 
-    @Override
-    public String toString() {
-        return "HourForecast{" +
-                "temperature=" + temperature +
-                ", humidity=" + humidity +
-                ", hour=" + hour +
-                ", date='" + date + '\'' +
-                ", weather='" + weather + '\'' +
-                ", iconURL='" + iconURL + '\'' +
-                '}';
-    }
-
     // the hour of the date that the forecast applies for (between 0 and 23)
     private int hour;
 
