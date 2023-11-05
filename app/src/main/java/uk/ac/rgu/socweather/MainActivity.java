@@ -41,19 +41,18 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // handle settings item selection
-        switch (item.getItemId()) {
-            case R.id.mi_appBarSetting:
-                NavController navController = Navigation.findNavController(findViewById(R.id.fragmentContainerView));
-                // work out where the user currently is
-                int currentFragmentId = navController.getCurrentDestination().getId();
-                // if that is different from the settings fragment
-                if (currentFragmentId != R.id.settingsFragment) {
-                    navController.navigate(R.id.settingsFragment);
-                    return true;
-                }
-                return super.onOptionsItemSelected(item);
-            default:
-                return super.onOptionsItemSelected(item);
+       if (item.getItemId()  == R.id.mi_appBarSetting){
+            NavController navController = Navigation.findNavController(findViewById(R.id.fragmentContainerView));
+            // work out where the user currently is
+            int currentFragmentId = navController.getCurrentDestination().getId();
+            // if that is different from the settings fragment
+            if (currentFragmentId != R.id.settingsFragment) {
+                navController.navigate(R.id.settingsFragment);
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        } else {
+           return super.onOptionsItemSelected(item);
         }
 
 
