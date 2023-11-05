@@ -85,17 +85,16 @@ public class LocationSelectionFragment extends Fragment implements View.OnClickL
        NavController navController = Navigation.findNavController(view);
 
        // TODO: get the number of days to get the forecast for
-       switch (view.getId()){
+       if (view.getId() == R.id.btnGetForecast) {
 
-            case R.id.btnGetForecast:
-                // navigate to the LocationConfirmationFragment
-                navController.navigate(R.id.action_locationSelectionFragment_to_locationConfirmationFragment);
-                break;
-            case R.id.btnGpsForecast:
+           // navigate to the LocationConfirmationFragment
+           navController.navigate(R.id.action_locationSelectionFragment_to_locationConfirmationFragment);
+
+       } else if (view.getId() == R.id.btnGpsForecast){
                 // TODO: get the location from GPS
                 // navigate to the Forecast Fragment
                 navController.navigate(R.id.action_locationSelectionFragment_to_forecastFragment);
-                break;
+
         }
 
     }
