@@ -55,7 +55,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
     private String mLocation;
     private int mNumberOfDays;
 
-
+    private List<HourForecast> forecastList;
 
     public ForecastFragment() {
         // Required empty public constructor
@@ -109,6 +109,9 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
         Button btnCheckForecastOnline = view.findViewById(R.id.btnCheckForecastOnline);
         btnCheckForecastOnline.setOnClickListener(this);
 
+        Button btnShareForecast = view.findViewById(R.id.btnShareForecast);
+        btnShareForecast.setOnClickListener(this);
+
         downloadForecast();
     }
 
@@ -122,8 +125,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
                 SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.forecast_date_format));
 
                 // for storing all the weather forecast
-                List<HourForecast> forecastList = new ArrayList<HourForecast>(24*5);
-
+                forecastList = new ArrayList<HourForecast>(24*mNumberOfDays);
                 try {
                     // convert text response to a JSON object for processing
                     JSONObject rootObj = new JSONObject(response);
@@ -244,6 +246,18 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
             // such as https://www.bing.com/search?q=aberdeen+weather
             Uri webpage = Utils.buildUri("https://www.bing.com/search?", "q", this.mLocation + " weather");
             Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+            //if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            //}
+        } else if (view.getId() == R.id.btnShareForecast){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            String message = "Forecast for " + mLocation;
+            if (forecastList != null && forecastList.size() > 0){
+                HourForecast firstHour = forecastList.get(0);
+                message += String.format(": at %s it'll be %sC", firstHour.getHour(), String.valueOf(firstHour.getTemperature()));
+            }
+            intent.putExtra("sms_body", message);
             //if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
             //}
