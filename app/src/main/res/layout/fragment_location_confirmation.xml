@@ -30,4 +30,16 @@
         android:layout_margin="8dp"
         android:text="@string/btnGetForecastLocationConfirm" />
 
+    <Button
+        android:id="@+id/btnGetForecastBasicList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/get_forecast_basic_listview" />
+
+    <Button
+        android:id="@+id/btnGetForecastCustomList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/get_forecast_custom_listview" />
+
 </LinearLayout>
