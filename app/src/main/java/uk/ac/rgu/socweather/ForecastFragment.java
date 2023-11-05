@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -51,6 +52,8 @@ public class ForecastFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+
+
     public ForecastFragment() {
         // Required empty public constructor
     }
@@ -80,6 +83,8 @@ public class ForecastFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
@@ -175,7 +180,13 @@ public class ForecastFragment extends Fragment {
                     if (forecastList.size() > 0) {
                         // display the forecast list
                         RecyclerView rv = getActivity().findViewById(R.id.rvForecast);
+
+                        ForecastRecyclerViewAdapter adapter = new ForecastRecyclerViewAdapter(getContext(), forecastList);
+
+                        rv.setAdapter(adapter);
+                        rv.setLayoutManager(new LinearLayoutManager(getContext()));
                         rv.setVisibility(View.VISIBLE);
+
                         // enable the buttons for sharing
                         getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
                         getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);
