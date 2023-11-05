@@ -1,5 +1,7 @@
 package uk.ac.rgu.socweather;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,13 +36,14 @@ import java.util.Calendar;
 import java.util.List;
 
 import uk.ac.rgu.socweather.data.HourForecast;
+import uk.ac.rgu.socweather.data.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link CustomListViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CustomListViewFragment extends Fragment {
+public class CustomListViewFragment extends Fragment implements View.OnClickListener {
 
     // tag for loggging message
     private static final String TAG = "ForecastFragment";
@@ -52,6 +56,8 @@ public class CustomListViewFragment extends Fragment {
     private String mLocation;
     private int mNumberOfDays;
 
+    // for the data to be shown to the user
+    private List<HourForecast> forecastList;
 
     // the adapter being used by the ListView
     private HourForecastArrayAdapter mListAdapter;
@@ -101,6 +107,16 @@ public class CustomListViewFragment extends Fragment {
         TextView tvForecastLabel = getActivity().findViewById(R.id.tvForecastLabel);
         tvForecastLabel.setText(getContext().getString(R.string.tvForecastLabelLoading,mLocation));
 
+        // set the action handlers on the buttons
+        Button btnShowMap = view.findViewById(R.id.btnShowLocationMap);
+        btnShowMap.setOnClickListener(this);
+
+        Button btnCheckForecastOnline = view.findViewById(R.id.btnCheckForecastOnline);
+        btnCheckForecastOnline.setOnClickListener(this);
+
+        Button btnShareForecast = view.findViewById(R.id.btnShareForecast);
+        btnShareForecast.setOnClickListener(this);
+
         downloadForecast();
     }
 
@@ -115,7 +131,7 @@ public class CustomListViewFragment extends Fragment {
                 SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.forecast_date_format));
 
                 // for storing all the weather forecast
-                List<HourForecast> forecastList = new ArrayList<HourForecast>(24 * 5);
+                forecastList = new ArrayList<HourForecast>(24 * 5);
 
                 try {
                     // convert text response to a JSON object for processing
@@ -214,5 +230,44 @@ public class CustomListViewFragment extends Fragment {
         RequestQueue rq = Volley.newRequestQueue(getContext());
         // add the request to make it
         rq.add(request);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.btnShowLocationMap){
+            // show the this.mLocation on a mapp app
+            // want to build a URI for the form geo:0,0?q=mLocation
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("geo")
+                    .authority("0,0")
+                    .appendQueryParameter("q", mLocation);
+            Uri geoLocation = builder.build();
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(geoLocation);
+            //if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            //}
+        } else if (view.getId() == R.id.btnCheckForecastOnline){
+            // launch the web browser app loading a serach engine
+            // with a URL searching for the weather at mLocation
+            // such as https://www.bing.com/search?q=aberdeen+weather
+            Uri webpage = Utils.buildUri("https://www.bing.com/search?", "q", this.mLocation + " weather");
+            Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+            //if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            //}
+        } else if (view.getId() == R.id.btnShareForecast){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            String message = "Forecast for " + mLocation;
+            if (forecastList != null && forecastList.size() > 0){
+                HourForecast firstHour = forecastList.get(0);
+                message += String.format(": at %s it'll be %sC", firstHour.getHour(), String.valueOf(firstHour.getTemperature()));
+            }
+            intent.putExtra("sms_body", message);
+            //if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+            //}
+        }
     }
 }

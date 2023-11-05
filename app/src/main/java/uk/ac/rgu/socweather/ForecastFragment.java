@@ -55,6 +55,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
     private String mLocation;
     private int mNumberOfDays;
 
+    // for the data to be shown to the user
     private List<HourForecast> forecastList;
 
     public ForecastFragment() {
@@ -262,6 +263,5 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
             startActivity(intent);
             //}
         }
-
     }
 }
