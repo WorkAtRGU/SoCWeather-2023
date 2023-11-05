@@ -162,7 +162,7 @@ public class ForecastFragment extends Fragment {
                     Toast.makeText(getContext(), R.string.error_parsing_forecast, Toast.LENGTH_LONG );
                     ((TextView)getActivity().findViewById(R.id.tvForecastLabel)).setText(R.string.error_parsing_forecast);
 
-                    Log.d(TAG, "Parsing JSON erro" + e.getLocalizedMessage());
+                    Log.d(TAG, "Parsing JSON error" + e.getLocalizedMessage());
                     e.printStackTrace();
                 } finally {
                     // do something the forecasts that have been downloaded
@@ -170,13 +170,17 @@ public class ForecastFragment extends Fragment {
                     // remove the spinner
                     ProgressBar pg = getActivity().findViewById(R.id.pb_forecastFragment);
                     pg.setVisibility(View.GONE);
-                    // display the forecast list
-                    RecyclerView rv = getActivity().findViewById(R.id.rvForecast);
-                    rv.setVisibility(View.VISIBLE);
-                    // enable the buttons for sharing
-                    getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
-                    getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);
-                    getActivity().findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
+
+                    // if we have some data, then enable the relevant Views
+                    if (forecastList.size() > 0) {
+                        // display the forecast list
+                        RecyclerView rv = getActivity().findViewById(R.id.rvForecast);
+                        rv.setVisibility(View.VISIBLE);
+                        // enable the buttons for sharing
+                        getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
+                        getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);
+                        getActivity().findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
+                    }
                 }
             }
         }, new Response.ErrorListener() {
