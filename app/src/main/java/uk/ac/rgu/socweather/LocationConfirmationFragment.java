@@ -71,6 +71,13 @@ public class LocationConfirmationFragment extends Fragment implements View.OnCli
         // for navigate to the forecast fragment
         Button btnGetForecastLocationConfirm = view.findViewById(R.id.btnGetForecastLocationConfirm);
         btnGetForecastLocationConfirm.setOnClickListener(this);
+
+        // add click listeners for alernative lists
+        Button btnBasicListView = view.findViewById(R.id.btnGetForecastBasicList);
+        btnBasicListView.setOnClickListener(this);
+
+        Button btnCustomListView = view.findViewById(R.id.btnGetForecastCustomList);
+        btnCustomListView.setOnClickListener(this);
     }
 
     @Override
@@ -79,6 +86,10 @@ public class LocationConfirmationFragment extends Fragment implements View.OnCli
             // TODO: get the location selected by the user
             // navigate to the forecast fragment
             Navigation.findNavController(view).navigate(R.id.action_locationConfirmationFragment_to_forecastFragment);
+        } else if (view.getId() == R.id.btnGetForecastBasicList){
+            Navigation.findNavController(view).navigate(R.id.action_locationConfirmationFragment_to_basicListViewFragment);
+        }  else if (view.getId() == R.id.btnGetForecastCustomList){
+            Navigation.findNavController(view).navigate(R.id.action_locationConfirmationFragment_to_customListViewFragment);
         }
     }
 }
