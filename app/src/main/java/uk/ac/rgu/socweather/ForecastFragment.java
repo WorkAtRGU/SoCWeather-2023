@@ -130,6 +130,16 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
                 try {
                     // convert text response to a JSON object for processing
                     JSONObject rootObj = new JSONObject(response);
+
+                    // get the location object
+                    JSONObject locationObj = rootObj.getJSONObject("location");
+                    String location =
+                            locationObj.getString("name") +
+                                    ", " + locationObj.getString("region") +
+                                    ", " + locationObj.getString("country");
+
+
+
                     // get the forecast value
                     JSONObject forecastObject = rootObj.getJSONObject("forecast");
                     // get the forecast day value - an array of days
@@ -171,6 +181,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
                             hourForecast.setIconURL(weatherIcon);
                             hourForecast.setHour(hourOfDay);
                             hourForecast.setDate(dayMonth);
+                            hourForecast.setLocation(location);
 
                             // add this hour forecast to the list
                             forecastList.add(hourForecast);
