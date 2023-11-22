@@ -126,9 +126,9 @@ public class BasicListViewFragment extends Fragment implements View.OnClickListe
             now.add(Calendar.HOUR, (24 * i));
             String date = Utils.getWeatherForecastDateFormat(getContext()).format(now.getTime());
 
-            forecastList.addAll(this.mWeatherForecastRepo.getHourForecasts(this.mLocation, date));
+            this.forecastList.addAll(this.mWeatherForecastRepo.getHourForecasts(this.mLocation, date));
         }
-        if (forecastList.size() == (24*mNumberOfDays)){
+        if (this.forecastList.size() == (24*mNumberOfDays)){
             // display the cached values
             ProgressBar pg = getActivity().findViewById(R.id.pb_forecastFragment);
             pg.setVisibility(View.GONE);
