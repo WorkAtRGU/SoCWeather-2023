@@ -27,7 +27,4 @@ public abstract class WeatherDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    private WeatherDatabase(){
-        super();
-    }
 }

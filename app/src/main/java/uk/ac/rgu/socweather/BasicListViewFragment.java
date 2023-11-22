@@ -37,6 +37,7 @@ import java.util.List;
 
 import uk.ac.rgu.socweather.data.HourForecast;
 import uk.ac.rgu.socweather.data.Utils;
+import uk.ac.rgu.socweather.data.WeatherForecastRepository;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,6 +58,9 @@ public class BasicListViewFragment extends Fragment implements View.OnClickListe
 
     // for the data to be shown to the user
     private List<HourForecast> forecastList;
+
+    // repo for managing data locally
+    private WeatherForecastRepository mWeatherForecastRepo;
 
     public BasicListViewFragment() {
         // Required empty public constructor
@@ -86,6 +90,8 @@ public class BasicListViewFragment extends Fragment implements View.OnClickListe
             this.mLocation = getArguments().getString(ARG_PARAM_LOCATION);
             this.mNumberOfDays = getArguments().getInt(ARG_PARAM_NUMBER_OF_DAYS);
         }
+
+        this.mWeatherForecastRepo = new WeatherForecastRepository(getContext());
     }
 
     @Override
@@ -106,13 +112,32 @@ public class BasicListViewFragment extends Fragment implements View.OnClickListe
         Button btnShowMap = view.findViewById(R.id.btnShowLocationMap);
         btnShowMap.setOnClickListener(this);
 
+        this.forecastList = new ArrayList<HourForecast>();
+
         Button btnCheckForecastOnline = view.findViewById(R.id.btnCheckForecastOnline);
         btnCheckForecastOnline.setOnClickListener(this);
 
         Button btnShareForecast = view.findViewById(R.id.btnShareForecast);
         btnShareForecast.setOnClickListener(this);
 
-        downloadForecast(view);
+        // check if we already have a forecast in the database, if so then load that
+        for (int i = 0 ; i < mNumberOfDays ; i++) {
+            Calendar now = Calendar.getInstance();
+            now.add(Calendar.HOUR, (24 * i));
+            String date = Utils.getWeatherForecastDateFormat(getContext()).format(now.getTime());
+
+            forecastList.addAll(this.mWeatherForecastRepo.getHourForecasts(this.mLocation, date));
+        }
+        if (forecastList.size() == (24*mNumberOfDays)){
+            // display the cached values
+            ProgressBar pg = getActivity().findViewById(R.id.pb_forecastFragment);
+            pg.setVisibility(View.GONE);
+
+            displayForecastViews(view);
+        } else {
+            // downlaod and store
+            downloadForecast(view);
+        }
     }
 
     private void downloadForecast(View view) {
@@ -193,26 +218,7 @@ public class BasicListViewFragment extends Fragment implements View.OnClickListe
 
                     // if we have some data, then enable the relevant Views
                     if (forecastList.size() > 0) {
-                        // display the forecast list
-                        ListView lv = view.findViewById(R.id.lvBasicForecast);
-                        lv.setVisibility(View.VISIBLE);
-
-                        // add the contents of forecastList to lv
-                        ArrayAdapter<HourForecast> adapter = new ArrayAdapter<HourForecast>(
-                                getContext(),
-                                android.R.layout.simple_list_item_1,
-                                forecastList
-                        );
-                        lv.setAdapter(adapter);
-
-                        // update the tvForecastLabel text
-                        TextView tvForecastLabel = getActivity().findViewById(R.id.tvForecastLabel);
-                        tvForecastLabel.setText(getContext().getString(R.string.tvForecastLabel,mLocation));
-
-                        // enable the buttons for sharing
-                        getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
-                        getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);
-                        getActivity().findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
+                        displayForecastViews(view);
                     }
                 }
             }
@@ -228,6 +234,34 @@ public class BasicListViewFragment extends Fragment implements View.OnClickListe
         RequestQueue rq = Volley.newRequestQueue(getContext());
         // add the request to make it
         rq.add(request);
+    }
+
+
+    /**
+     *
+     * @param view The root view of this Fragment
+     */
+    private void displayForecastViews(View view){
+        // display the forecast list
+        ListView lv = view.findViewById(R.id.lvBasicForecast);
+        lv.setVisibility(View.VISIBLE);
+
+        // add the contents of forecastList to lv
+        ArrayAdapter<HourForecast> adapter = new ArrayAdapter<HourForecast>(
+                getContext(),
+                android.R.layout.simple_list_item_1,
+                forecastList
+        );
+        lv.setAdapter(adapter);
+
+        // update the tvForecastLabel text
+        TextView tvForecastLabel = getActivity().findViewById(R.id.tvForecastLabel);
+        tvForecastLabel.setText(getContext().getString(R.string.tvForecastLabel,mLocation));
+
+        // enable the buttons for sharing
+        view.findViewById(R.id.btnShareForecast).setEnabled(true);
+        view.findViewById(R.id.btnShowLocationMap).setEnabled(true);
+        view.findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
     }
 
     @Override

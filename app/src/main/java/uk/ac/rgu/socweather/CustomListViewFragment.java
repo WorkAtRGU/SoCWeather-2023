@@ -37,6 +37,7 @@ import java.util.List;
 
 import uk.ac.rgu.socweather.data.HourForecast;
 import uk.ac.rgu.socweather.data.Utils;
+import uk.ac.rgu.socweather.data.WeatherForecastRepository;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +62,9 @@ public class CustomListViewFragment extends Fragment implements View.OnClickList
 
     // the adapter being used by the ListView
     private HourForecastArrayAdapter mListAdapter;
+
+    // repo for managing data locally
+    private WeatherForecastRepository mWeatherForecastRepo;
 
     public CustomListViewFragment() {
         // Required empty public constructor
@@ -91,6 +95,7 @@ public class CustomListViewFragment extends Fragment implements View.OnClickList
             this.mNumberOfDays = getArguments().getInt(ARG_PARAM_NUMBER_OF_DAYS);
         }
 
+        this.mWeatherForecastRepo = new WeatherForecastRepository(getContext());
     }
 
     @Override
@@ -117,10 +122,27 @@ public class CustomListViewFragment extends Fragment implements View.OnClickList
         Button btnShareForecast = view.findViewById(R.id.btnShareForecast);
         btnShareForecast.setOnClickListener(this);
 
-        downloadForecast();
+        // check if we already have a forecast in the database, if so then load that
+        for (int i = 0 ; i < mNumberOfDays ; i++) {
+            Calendar now = Calendar.getInstance();
+            now.add(Calendar.HOUR, (24 * i));
+            String date = Utils.getWeatherForecastDateFormat(getContext()).format(now.getTime());
+
+            forecastList.addAll(this.mWeatherForecastRepo.getHourForecasts(this.mLocation, date));
+        }
+        if (forecastList.size() == (24*mNumberOfDays)){
+            // display the cached values
+            ProgressBar pg = getActivity().findViewById(R.id.pb_forecastFragment);
+            pg.setVisibility(View.GONE);
+
+            displayForecastViews(view);
+        } else {
+            // downlaod and store
+            downloadForecast(view);
+        }
     }
 
-    private void downloadForecast() {
+    private void downloadForecast(View view) {
         String url = String.format("https://api.weatherapi.com/v1/forecast.json?key=a3b9cc3fb35943d5826152257210311&q=%s&days=%d", this.mLocation, this.mNumberOfDays);
 
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -198,23 +220,7 @@ public class CustomListViewFragment extends Fragment implements View.OnClickList
 
                     // if we have some data, then enable the relevant Views
                     if (forecastList.size() > 0) {
-                        // setup the adapter with the data
-                        mListAdapter = new HourForecastArrayAdapter(getContext(), R.layout.hour_forecast_list_item, forecastList);
-                        mListAdapter.notifyDataSetChanged();
-
-                        // display the forecast list
-                        ListView lv = getActivity().findViewById(R.id.lvCustomForecast);
-                        lv.setAdapter(mListAdapter);
-                        lv.setVisibility(View.VISIBLE);
-
-                        // update the tvForecastLabel text
-                        TextView tvForecastLabel = getActivity().findViewById(R.id.tvForecastLabel);
-                        tvForecastLabel.setText(getContext().getString(R.string.tvForecastLabel,mLocation));
-
-                        // enable the buttons for sharing
-                        getActivity().findViewById(R.id.btnShareForecast).setEnabled(true);
-                        getActivity().findViewById(R.id.btnShowLocationMap).setEnabled(true);
-                        getActivity().findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
+                        displayForecastViews(view);
                     }
                 }
             }
@@ -230,6 +236,30 @@ public class CustomListViewFragment extends Fragment implements View.OnClickList
         RequestQueue rq = Volley.newRequestQueue(getContext());
         // add the request to make it
         rq.add(request);
+    }
+
+    /**
+     *
+     * @param view The root view of this Fragment
+     */
+    private void displayForecastViews(View view){
+        // setup the adapter with the data
+        mListAdapter = new HourForecastArrayAdapter(getContext(), R.layout.hour_forecast_list_item, forecastList);
+        mListAdapter.notifyDataSetChanged();
+
+        // display the forecast list
+        ListView lv = view.findViewById(R.id.lvCustomForecast);
+        lv.setAdapter(mListAdapter);
+        lv.setVisibility(View.VISIBLE);
+
+        // update the tvForecastLabel text
+        TextView tvForecastLabel = view.findViewById(R.id.tvForecastLabel);
+        tvForecastLabel.setText(getContext().getString(R.string.tvForecastLabel,mLocation));
+
+        // enable the buttons for sharing
+        view.findViewById(R.id.btnShareForecast).setEnabled(true);
+        view.findViewById(R.id.btnShowLocationMap).setEnabled(true);
+        view.findViewById(R.id.btnCheckForecastOnline).setEnabled(true);
     }
 
     @Override

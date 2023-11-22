@@ -97,6 +97,14 @@ public class HourForecast {
         this.location = location;
     }
 
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
     @Override
     public String toString() {
         return "HourForecast{" +
